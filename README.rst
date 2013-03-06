@@ -1,4 +1,4 @@
-OpenGL Anti-Grain Geometry (GL-AGG)
+OpenGL Anti-Grain Geometry (gl-agg)
 ===================================
 
 This is a repository for gathering different experiments related to
@@ -6,6 +6,24 @@ high-quality rendering of 2D graphics using OpenGL (including lines, path,
 circles, arcs, ellipses, bézier curves, polygon, dash patterns, etc.).
 
 
-.. image:: tests/gl-lines.png
-.. image:: tests/agg-lines.png
+Lines
+-----
+
+.. image:: tests/gl-lines-detail.png
+
+
+Circles
+-------
+
+.. image:: tests/gl-circles-detail.png
+
+
+Path
+----
+
+.. image:: tests/gl-stars-detail.png
+
+.. image:: tests/gl-tiger-detail.png
+
+.. image:: tests/gl-spiral-detail.png
 
