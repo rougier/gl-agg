@@ -7,6 +7,5 @@ circles, arcs, ellipses, bézier curves, polygon, dash patterns, etc.).
 
 
 .. image:: tests/gl-lines.png
-
 .. image:: tests/agg-lines.png
 
