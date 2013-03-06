@@ -25,5 +25,3 @@ Path
 
 .. image:: tests/gl-tiger-detail.png
 
-.. image:: tests/gl-spiral-detail.png
-
