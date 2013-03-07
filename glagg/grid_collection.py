@@ -266,12 +266,12 @@ class GridCollection(Collection):
                                 gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE )
             gl.glTexParameterf(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_BASE_LEVEL, 0)
             gl.glTexParameterf(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAX_LEVEL, 0)
-            gl.glTexImage2D( gl.GL_TEXTURE_2D, 0, gl.GL_RGBA32F_ARB,
+            gl.glTexImage2D( gl.GL_TEXTURE_2D, 0, gl.GL_RGBA32F,
                              shape[1]//4, shape[0], 0, gl.GL_RGBA, gl.GL_FLOAT, data )
 
         gl.glActiveTexture( gl.GL_TEXTURE2 )
         gl.glBindTexture( gl.GL_TEXTURE_2D, self._gbuffer_id )
-        gl.glTexImage2D( gl.GL_TEXTURE_2D, 0, gl.GL_RGBA32F_ARB,
+        gl.glTexImage2D( gl.GL_TEXTURE_2D, 0, gl.GL_RGBA32F,
                          shape[1]//4, shape[0], 0, gl.GL_RGBA, gl.GL_FLOAT, data )
         self._dirty = False
 

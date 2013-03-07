@@ -141,7 +141,7 @@ class DashAtlas(object):
         gl.glTexParameterf( gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_REPEAT )
         gl.glPixelTransferf( gl.GL_ALPHA_SCALE, 1 )
         gl.glPixelTransferf( gl.GL_ALPHA_BIAS, 0 )
-        gl.glTexImage2D( gl.GL_TEXTURE_2D, 0, gl.GL_RGBA32F_ARB,
+        gl.glTexImage2D( gl.GL_TEXTURE_2D, 0, gl.GL_RGBA32F,
                          self._data.shape[1], self._data.shape[0], 0,
                          gl.GL_RGBA, gl.GL_FLOAT, self._data )
 
