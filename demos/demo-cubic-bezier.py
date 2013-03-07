@@ -55,10 +55,10 @@ def add_bezier(p0,p1,p2,p3):
                  dash_pattern = 'densely dashed', dash_caps=('<','>') )
     paths.append((p0,p1), color=(0.0,0.0,1.0,1.0), dash_pattern='solid')
     paths.append((p2,p3), color=(0.0,0.0,1.0,1.0), dash_pattern='solid')
-    circles.append( center = p0, radius = 4, color=(0.0,0.0,1.0,1.0) )
-    circles.append( center = p1, radius = 4, color=(0.0,0.0,1.0,1.0) )
-    circles.append( center = p2, radius = 4, color=(0.0,0.0,1.0,1.0) )
-    circles.append( center = p3, radius = 4, color=(0.0,0.0,1.0,1.0) )
+    circles.append( center = p0, radius = 4, fg_color=(0.0,0.0,1.0,1.0) )
+    circles.append( center = p1, radius = 4, fg_color=(0.0,0.0,1.0,1.0) )
+    circles.append( center = p2, radius = 4, fg_color=(0.0,0.0,1.0,1.0) )
+    circles.append( center = p3, radius = 4, fg_color=(0.0,0.0,1.0,1.0) )
 
 
 # -----------------------------------------------------------------------------
