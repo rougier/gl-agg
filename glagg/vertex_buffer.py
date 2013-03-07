@@ -112,13 +112,13 @@ class VertexBuffer(object):
 
     # ---------------------------------
     def get_vertices(self):
-        return self._vertices.data
+        return self._vertices
     vertices = property(get_vertices)
 
 
     # ---------------------------------
     def get_indices(self):
-        return self._indices.data
+        return self._indices
     indices = property(get_indices)
 
 
