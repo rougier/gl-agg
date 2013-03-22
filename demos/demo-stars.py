@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
 # Copyright (C) 2013 Nicolas P. Rougier. All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # 1. Redistributions of source code must retain the above copyright notice,
 #    this list of conditions and the following disclaimer.
-# 
+#
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY NICOLAS P. ROUGIER ''AS IS'' AND ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -23,7 +23,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 # The views and conclusions contained in the software and documentation are
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
@@ -39,9 +39,10 @@ def on_display():
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     collection.draw()
     glut.glutSwapBuffers()
-    
+
 # -------------------------------------
 def on_reshape(width, height):
+    collection.translate = position * [width, height]
     gl.glViewport(0, 0, width, height)
 
 # -------------------------------------
@@ -68,8 +69,8 @@ if __name__ == '__main__':
     t0 = glut.glutGet(glut.GLUT_ELAPSED_TIME)
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
+    glut.glutInitWindowSize(512, 512)
     glut.glutCreateWindow("Stars")
-    glut.glutReshapeWindow(512,512)
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     for i in range(2000):
         color = np.random.uniform(0,1,4)
         linewidth = np.random.uniform(1,2)
-        translate = np.random.uniform(0,512,2)
+        translate = np.random.uniform(0,1,2)
         scale = np.random.uniform(10,15)
         rotate = np.random.uniform(0,2*np.pi)
         collection.append(
@@ -91,5 +92,6 @@ if __name__ == '__main__':
             translate = translate,
             scale = scale,
             rotate = rotate)
+    position = collection.translate.copy()
 
     glut.glutMainLoop()

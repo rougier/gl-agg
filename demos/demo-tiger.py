@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
 # Copyright (C) 2013 Nicolas P. Rougier. All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # 1. Redistributions of source code must retain the above copyright notice,
 #    this list of conditions and the following disclaimer.
-# 
+#
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY NICOLAS P. ROUGIER ''AS IS'' AND ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -23,7 +23,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 # The views and conclusions contained in the software and documentation are
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
@@ -129,8 +129,8 @@ if __name__ == '__main__':
     t0, frames, t = glut.glutGet(glut.GLUT_ELAPSED_TIME), 0, 0
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB)
-    glut.glutCreateWindow("Antialiased thick polylines")
-    glut.glutReshapeWindow(512,512)
+    glut.glutInitWindowSize(512, 512)
+    glut.glutCreateWindow("Tiger [scroll and zoom with mouse]")
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
@@ -152,7 +152,7 @@ if __name__ == '__main__':
         glutScrollFunc(on_scroll)
     except:
         if bool(glut.glutMouseWheelFunc):
-            glutMouseWheelFunc(on_wheel)
+            glut.glutMouseWheelFunc(on_wheel)
 
 
     collection = PathCollection()
