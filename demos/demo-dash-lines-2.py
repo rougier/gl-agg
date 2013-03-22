@@ -46,14 +46,14 @@ def on_keyboard(key, x, y):
 if __name__ == '__main__':
     import sys
     import OpenGL.GLUT as glut
-    from dash_atlas import DashAtlas
+    from glagg.dash_atlas import DashAtlas
     from shapes import star, asterisk
-    from line_collection import LineCollection
+    from glagg.line_collection import LineCollection
 
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
+    glut.glutInitWindowSize(600, 256)
     glut.glutCreateWindow("Antialiased thick polylines")
-    glut.glutReshapeWindow(600, 256)
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
         scale = 200
         theta = -5 * np.pi/180
         translate = 32+i*8, 128
-        collection.append([(0.0,-0.5),(0.0,+0.5)], closed=False,
+        collection.append([(0.0,-0.5),(0.0,+0.5)],
                           linewidth = linewidth, color=color,
                           scale = scale, rotate = theta, translate = translate,
                           dash_pattern = 'dotted' )

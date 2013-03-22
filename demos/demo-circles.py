@@ -52,8 +52,8 @@ if __name__ == '__main__':
 
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB)
+    glut.glutInitWindowSize(512, 512+32)
     glut.glutCreateWindow("OpenGL antialiased circles")
-    glut.glutReshapeWindow(512, 512+32)
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)

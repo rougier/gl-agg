@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
 # Copyright (C) 2013 Nicolas P. Rougier. All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # 1. Redistributions of source code must retain the above copyright notice,
 #    this list of conditions and the following disclaimer.
-# 
+#
 # 2. Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
 #    documentation and/or other materials provided with the distribution.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY NICOLAS P. ROUGIER ''AS IS'' AND ANY EXPRESS OR
 # IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 # MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -23,7 +23,7 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# 
+#
 # The views and conclusions contained in the software and documentation are
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
@@ -62,7 +62,7 @@ def dtype_reduce(dtype, level=0, depth=0):
     """
     dtype = np.dtype(dtype)
     fields = dtype.fields
-    
+
     # No fields
     if fields is None:
         if dtype.shape:
@@ -213,10 +213,11 @@ class Collection(object):
             count = size*4
             self.utype = utype
         self._vbuffer = VertexBuffer(vtype)
-        self._ubuffer = DynamicBuffer( utype ) 
+        self._ubuffer = DynamicBuffer( utype )
         self._ubuffer_id = 0
         self._ubuffer_shape = [0,count]
 
+        self._dirty = True
 
     # ---------------------------------
     def __len__(self):

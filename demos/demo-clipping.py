@@ -50,9 +50,15 @@ def on_display():
     collection.draw()
 
     glut.glutSwapBuffers()
-    
+
 # -------------------------------------
 def on_reshape(width, height):
+    size = min(width, height)
+
+    collection.translate = positions * size
+    mask.translate = [size/2, size/2]
+    mask.scale = [size * 0.4]
+
     gl.glViewport(0, 0, width, height)
 
 # -------------------------------------
@@ -62,6 +68,7 @@ def on_keyboard(key, x, y):
 # -------------------------------------
 def on_idle():
     n = len(collection)
+    mask.rotate -= 0.005
     collection.rotate += 0.005
 
     global t, t0, frames
@@ -86,26 +93,32 @@ if __name__ == '__main__':
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB |
                              glut.GLUT_DEPTH  | glut.GLUT_STENCIL )
+    glut.glutInitWindowSize(800, 800)
     glut.glutCreateWindow("Clipping demo")
-    glut.glutReshapeWindow(800, 800)
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
     glut.glutIdleFunc(on_idle)
 
     collection = PathCollection()
+    mask = PathCollection()
+    size = 800
+
+    collection.clear()
     vertices = star(n=5)
     for i in range(2000):
         collection.append(
             vertices, closed=True,
             color = np.random.uniform(0,1,4),
             linewidth = np.random.uniform(1,2),
-            translate = np.random.uniform(0,800,2),
+            translate = np.random.uniform(0,1,2),
             scale = np.random.uniform(10,15),
             rotate = np.random.uniform(0,2*np.pi))
+    positions = collection.translate.copy()
 
-    mask = PathCollection()
+    mask.clear()
     mask.append( vertices, closed=True,
-                 color = (0,0,0,1), linewidth=100, translate=(400,400), scale=300)
+                 color = (0,0,0,1), linewidth=100,
+                 translate=(size/2, size/2), scale=size * 0.4)
 
     glut.glutMainLoop()

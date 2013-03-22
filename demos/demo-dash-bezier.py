@@ -36,9 +36,10 @@ def on_display():
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     collection.draw()
     glut.glutSwapBuffers()
-    
+
 def on_reshape(width, height):
     gl.glViewport(0, 0, width, height)
+    collection.scale = min(width, height)
 
 def on_keyboard(key, x, y):
     if key == '\033': sys.exit()
@@ -61,8 +62,8 @@ if __name__ == '__main__':
 
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
-    glut.glutCreateWindow("Dashed & antialiased bezier curve")
-    glut.glutReshapeWindow(512, 512)
+    glut.glutInitWindowSize(512, 512)
+    glut.glutCreateWindow("Dashed & antialiased bezier curve [Arrow keys change offset]")
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
@@ -73,15 +74,15 @@ if __name__ == '__main__':
     collection = PathCollection( atlas )
 
     # ---------------------------------
-    p0,p1,p2 = (50.,300.), (350.,500.), (450.,300.)
-    vertices = curve3_bezier(p0, p1, p2)
+    points = np.array([[.1, .6], [.5, 1.], [.9, .6]])
+    vertices = curve3_bezier(*points)
     collection.append(vertices, color=(0.75,0.75,1.00,1.00), linewidth=40,
                       dash_pattern = 'densely dashed')
 
     # ---------------------------------
-    vertices = curve3_bezier(p0,p1,p2)
+    vertices = curve3_bezier(*(points + [0, -0.3]))
     collection.append( vertices, color=(0.75,0.75,1.00,1.0),
                        linewidth=50,  linecaps = ('|','|'),
-                       translate=(000,-150),
                        dash_pattern = 'custom', dash_caps=('|','|') )
+
     glut.glutMainLoop()

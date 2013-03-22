@@ -37,9 +37,10 @@ def on_display():
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     collection.draw()
     glut.glutSwapBuffers()
-    
+
 # -------------------------------------
 def on_reshape(width, height):
+    collection.translate = positions * [width, height]
     gl.glViewport(0, 0, width, height)
 
 # -------------------------------------
@@ -69,8 +70,8 @@ if __name__ == '__main__':
     t0 = glut.glutGet(glut.GLUT_ELAPSED_TIME)
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
+    glut.glutInitWindowSize(800, 800)
     glut.glutCreateWindow("Asterisks")
-    glut.glutReshapeWindow(800, 800)
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
@@ -78,12 +79,14 @@ if __name__ == '__main__':
 
     collection = PathCollection()
     vertices = asterisk(n=5)
+
     for i in range(2000):
         collection.append(
             vertices, closed=True,
             color = np.random.uniform(0,1,4),
             linewidth = np.random.uniform(1,2),
-            translate = np.random.uniform(0,800,2),
+            translate = np.random.uniform(0,1,2),
             scale = np.random.uniform(10,15),
             rotate = np.random.uniform(0,2*np.pi))
+    positions = collection.translate.copy()
     glut.glutMainLoop()

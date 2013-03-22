@@ -36,8 +36,9 @@ def on_display():
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
     collection.draw()
     glut.glutSwapBuffers()
-    
+
 def on_reshape(width, height):
+    collection.translate = positions * [width, height]
     gl.glViewport(0, 0, width, height)
 
 def on_key(key, x, y):
@@ -74,8 +75,8 @@ if __name__ == '__main__':
     t0 = glut.glutGet(glut.GLUT_ELAPSED_TIME)
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
+    glut.glutInitWindowSize(800, 800)
     glut.glutCreateWindow("Antialiased thick polylines")
-    glut.glutReshapeWindow(800, 800)
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_key)
@@ -87,11 +88,12 @@ if __name__ == '__main__':
         vertices = curve4_bezier(p0,p1,p2,p3)
         color = np.random.uniform(0,1,4)
         linewidth = np.random.uniform(2,3)
-        translate = np.random.uniform(0,800,2)
+        translate = np.random.uniform(0,1,2)
         scale = np.random.uniform(20,45)
         rotate = np.random.uniform(0,2*np.pi)
         collection.append(
             vertices, color = color, linewidth = linewidth,
             translate = translate, scale=scale, rotate = rotate )
+    positions = collection.translate.copy()
 
     glut.glutMainLoop()

@@ -69,8 +69,8 @@ if __name__ == '__main__':
 
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
+    glut.glutInitWindowSize(512, 512)
     glut.glutCreateWindow("Antialiased thick polylines")
-    glut.glutReshapeWindow(512, 512)
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
