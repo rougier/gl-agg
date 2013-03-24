@@ -28,18 +28,38 @@
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
 # -----------------------------------------------------------------------------
+import os
+from glagg.texture_font import TextureFont
+from glagg.texture_atlas import TextureAtlas
 
-from path import Path
-from transforms import *
-from shader import Shader
-from dash_atlas import DashAtlas
 
-from glyph_collection import GlyphCollection
-from path_collection import PathCollection
-from line_collection import LineCollection
-from grid_collection import GridCollection
-from circle_collection import CircleCollection
-from ellipse_collection import EllipseCollection
+# -----------------------------------------------------------------------------
+class FontManagerException(Exception): pass
 
-from arc import elliptical_arc, arc
-from curves import curve3_bezier, curve4_bezier
+
+# -----------------------------------------------------------------------------
+class FontManager(object):
+    """
+    """
+
+    def __init__(self, width=1024, height=1024, depth=3 ):
+        self._width = 1024
+        self._height = 1024
+        self._depth = 3
+        self._atlas = TextureAtlas(width, height, depth)
+        self._fonts = {}
+
+    def get_atlas(self):
+        return self._atlas
+    atlas = property(get_atlas)
+
+    def get(self, filename, size=12):
+        ''' Get a font described by filename and size'''
+
+        key = '%s-%d' % (os.path.basename(filename), size)
+        if key in self._fonts.keys():
+            return self._fonts[key]
+        font = TextureFont(filename, size, self._atlas)
+        self._fonts[key] = font
+        return font
+        

@@ -29,21 +29,30 @@
 # policies, either expressed or implied, of Nicolas P. Rougier.
 # -----------------------------------------------------------------------------
 """
-A collection is a container for several objects having the same vertex
-structure (vtype) and same uniforms type (utype). A collection allows to
+A collection is a (virtual) container for several objects having the same
+vertex structure (vtype) and same uniforms type (utype). A collection allows to
 manipulate objects individually but they can be rendered at once (single call).
 
 Each object can have its own set of uniforms provided they are a combination of
 floats.
+
+To modify a parameter (e.g. translate) for all items at once::
+
+    collection.translate = x,y
+
+To modify a parameter (e.g. translate) for a single item (e.g. index=1)::
+
+   collection['translate'][1] = x,y
+
 """
 import numpy as np
 import OpenGL
 import OpenGL.GL as gl
 from operator import mul
-
 from transforms import orthographic
 from vertex_buffer import VertexBuffer
 from dynamic_buffer import DynamicBuffer
+
 
 
 # -----------------------------------------------------------------------------
@@ -111,39 +120,125 @@ def dtype_reduce(dtype, level=0, depth=0):
 
 # -----------------------------------------------------------------------------
 class Item(object):
+    """
+    An item represent an object within a collection and is create on demande
+    when accessing a specific object of the collection.
+    """
 
     # ---------------------------------
     def __init__(self, parent, key, vertices, indices, uniforms):
+        """
+        Create a new item from an existing collection.
+
+        Parameters
+        ----------
+
+        parent : Collection
+            Collection this item belongs to
+
+        key: int
+            Key index of the item within the collection
+
+        vertices: array-like
+            Vertices of the item
+
+        indices: array-like
+            Indices of the item
+
+        uniforms: array-like
+            Uniform parameters of the item
+
+
+        Notes
+        -----
+
+        Indices are given relatively to the whole collection.
+        """
+        
         self.parent = parent
         self.vertices = vertices
         self.indices  = indices
         self.uniforms = uniforms
         self.key = key
 
+
     # ---------------------------------
     def __getitem__(self, key):
+        """
+        Get a specific uniform parameters
+
+        Parameters
+        ----------
+
+        key: string
+            name of the parameter
+
+        Returns
+        -------
+
+        Specified parameter if it exists.
+        """
+
         if key in self.uniforms.dtype.names:
             return self.uniforms[key]
         raise KeyError
 
+
     # ---------------------------------
     def __setitem__(self, key, value):
+        """
+        Set a specific uniform parameters
+
+        Parameters
+        ----------
+
+        key: string
+            name of the parameter
+        """
+
         if key in self.uniforms.dtype.names:
             self.uniforms[key] = value
             self.parent._dirty = True
             return
         raise KeyError
 
+
     # ---------------------------------
     def __getattr__(self, name):
+        """
+        Get a specific uniform parameters
+
+        Parameters
+        ----------
+
+        key: string
+            name of the parameter
+
+        Returns
+        -------
+
+        Specified parameter if it exists.
+        """
+
         if hasattr(self, 'uniforms'):
             uniforms = object.__getattribute__(self,'uniforms')
             if name in uniforms.dtype.names:
                 return uniforms[name]
         return object.__getattribute__(self,name)
 
+
     # ---------------------------------
     def __setattr__(self, name, value):
+        """
+        Set a specific uniform parameters
+
+        Parameters
+        ----------
+
+        key: string
+            name of the parameter
+        """
+
         if hasattr(self, 'uniforms'):
             uniforms = object.__getattribute__(self,'uniforms')
             if name in uniforms.dtype.names:

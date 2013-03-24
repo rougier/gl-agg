@@ -13,4 +13,5 @@ setup( name         = "glagg",
        version      = "1.0",
        packages     = ['glagg'],
        package_data = {'glagg': ['shaders/*.vert',
-                                 'shaders/*.frag'] } )
+                                 'shaders/*.frag',
+                                 'fonts/Vera.ttf'] } )
