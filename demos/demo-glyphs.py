@@ -82,9 +82,9 @@ if __name__ == '__main__':
         color = np.random.uniform(0,1,4)
         x,y = np.random.uniform(0,1,2)
         rotate = np.random.uniform(0,2*np.pi)
-        collection.append(
-            text, x=x, y=y, size=12, color=color,
-            anchor_x='center', anchor_y='center')
+        collection.append(text, x=x, y=y, size=12, color=color,
+                          rotate = np.random.uniform(0,2*np.pi),
+                          anchor_x='center', anchor_y='center')
     position = collection.translate.copy()
     speed = np.random.uniform(0.002,0.005,len(collection))
     glut.glutMainLoop()
