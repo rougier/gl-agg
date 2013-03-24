@@ -28,57 +28,64 @@
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
 # -----------------------------------------------------------------------------
-import math
+import sys
+import numpy as np
 import OpenGL.GL as gl
+import OpenGL.GLUT as glut
 
+# -------------------------------------
 def on_display():
     gl.glClearColor(1,1,1,1);
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-    glyphs.draw()
+    collection.draw()
     glut.glutSwapBuffers()
-    
+
+# -------------------------------------
 def on_reshape(width, height):
+    collection.translate = position * [width, height]
     gl.glViewport(0, 0, width, height)
 
+# -------------------------------------
 def on_keyboard(key, x, y):
     if key == '\033': sys.exit()
 
-
-def degrees(angle):
-    return math.pi*angle/180.0
+# -------------------------------------
+def on_idle():
+    collection.rotate += speed
+    global t, t0, frames
+    t = glut.glutGet( glut.GLUT_ELAPSED_TIME )
+    frames = frames + 1
+    if t-t0 > 2500:
+        print "FPS : %.2f (%d frames in %.2f second)" % (frames*1000.0/(t-t0), frames, (t-t0)/1000.0)
+        t0, frames = t,0
+    glut.glutPostRedisplay()
 
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    import sys
-    import OpenGL.GLUT as glut
     from glagg import GlyphCollection
 
+    t0, frames, t = 0,0,0
+    t0 = glut.glutGet(glut.GLUT_ELAPSED_TIME)
     glut.glutInit(sys.argv)
-    glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB)
-    glut.glutCreateWindow("Demo label")
-    glut.glutReshapeWindow(512, 512)
+    glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
+    glut.glutInitWindowSize(512, 512)
+    glut.glutCreateWindow("Glyphs")
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
+    glut.glutIdleFunc(on_idle)
 
-    glyphs = GlyphCollection()
-
+    np.random.seed(1)
+    collection = GlyphCollection()
     text = "Hello World !"
-    color = 0,0,0,1
-
-    glyphs.append(text, x=0, y=0, size=32, color=color,
-                  anchor_x='left', anchor_y='bottom')
-
-    glyphs.append(text, x=0, y=512, size=32, color=color,
-                  anchor_x='left', anchor_y='top')
-
-    glyphs.append(text, x=512, y=0, size=32, color=color,
-                  anchor_x='right', anchor_y='bottom')
-
-    glyphs.append(text, x=512, y=512, size=32, color=color,
-                  anchor_x='right', anchor_y='top')
-
-    glyphs.append(text, x=256., y=256, size=48, color=color,
-                  anchor_x='center', anchor_y='center')
-
+    for i in range(500):
+        color = np.random.uniform(0,1,4)
+        x,y = np.random.uniform(0,1,2)
+        rotate = np.random.uniform(0,2*np.pi)
+        collection.append(
+            text, x=x, y=y, size=12, color=color,
+            anchor_x='center', anchor_y='center')
+    position = collection.translate.copy()
+    speed = np.random.uniform(0.002,0.005,len(collection))
     glut.glutMainLoop()
+
