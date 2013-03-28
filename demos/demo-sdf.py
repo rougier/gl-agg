@@ -42,7 +42,6 @@ def on_display():
 
 # -------------------------------------
 def on_reshape(width, height):
-    collection.translate = position * [width, height]
     gl.glViewport(0, 0, width, height)
 
 # -------------------------------------
@@ -51,42 +50,94 @@ def on_keyboard(key, x, y):
 
 # -------------------------------------
 def on_idle():
-    collection.rotate += speed
     global t, t0, frames
     t = glut.glutGet( glut.GLUT_ELAPSED_TIME )
     frames = frames + 1
     if t-t0 > 2500:
-        print "FPS : %.2f (%d frames in %.2f second)" % (frames*1000.0/(t-t0), frames, (t-t0)/1000.0)
+        print "FPS : %.2f (%d frames in %.2f second)" % (
+            (frames*1000.0/(t-t0), frames, (t-t0)/1000.0))
         t0, frames = t,0
     glut.glutPostRedisplay()
 
+
+# -------------------------------------
+def on_motion( x, y ):
+    global mouse,translate,scale
+    _,_,w,h = gl.glGetIntegerv(gl.GL_VIEWPORT)
+    y = h-y
+    dx,dy = x-mouse[0], y-mouse[1]
+    translate = [translate[0]+dx,translate[1]+dy]
+    mouse = x,y
+    collection.translate = translate
+    glut.glutPostRedisplay()
+
+# -------------------------------------
+def on_passive_motion( x, y ):
+    global mouse
+    _,_,w,h = gl.glGetIntegerv(gl.GL_VIEWPORT)
+    mouse = x, h-y
+
+# -------------------------------------
+def on_scroll(dx, dy):
+    global mouse,translate,scale
+
+    x,y = mouse
+    s = min(max(0.1,scale+.001*dy*scale), 200)
+    translate[0] = x-s*(x-translate[0])/scale
+    translate[1] = y-s*(y-translate[1])/scale
+    translate = [translate[0], translate[1]]
+    scale = s
+    collection.scale = s
+    collection.translate = translate
+    glut.glutPostRedisplay()
+
+# -------------------------------------
+def on_wheel(wheel, direction, x, y):
+    if wheel == 0:
+        on_scroll(0,direction)
+    elif wheel == 1:
+        on_scroll(direction,0)
+
+
+
+
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
-    from glagg import GlyphCollection
+    from glagg.sdf.font_manager import FontManager
+    from glagg.sdf.glyph_collection import GlyphCollection
 
-    t0, frames, t = 0,0,0
-    t0 = glut.glutGet(glut.GLUT_ELAPSED_TIME)
+    t0, frames, t = glut.glutGet(glut.GLUT_ELAPSED_TIME), 0, 0
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
-    glut.glutInitWindowSize(512, 512)
-    glut.glutCreateWindow("Glyphs")
+    glut.glutInitWindowSize(800, 400)
+    glut.glutCreateWindow("Signed Distance Fields [scroll and zoom with mouse]")
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)
-    glut.glutIdleFunc(on_idle)
+    #glut.glutIdleFunc(on_idle)
+    glut.glutMotionFunc( on_motion )
+    glut.glutPassiveMotionFunc( on_passive_motion )
+    # For OSX, see https://github.com/nanoant/osxglut
+    # GLUT for Mac OS X fork with Core Profile and scroll wheel support
+    try:
+        from ctypes import c_float
+        from OpenGL.GLUT.special import GLUTCallback
+        glutScrollFunc = GLUTCallback(
+            'Scroll', (c_float,c_float), ('delta_x','delta_y'),)
+        glutScrollFunc(on_scroll)
+    except:
+        if bool(glut.glutMouseWheelFunc):
+            glut.glutMouseWheelFunc(on_wheel)
 
-    np.random.seed(1)
-    collection = GlyphCollection()
-    text = "Hello World !"
-    for i in range(500):
-        color = np.random.uniform(0,1,4)
-        translate = np.random.uniform(0,1,2)
-        rotate = np.random.uniform(0,2*np.pi)
-        collection.append(text, size=12, color=color,
-                          translate=translate,
-                          rotate = np.random.uniform(0,2*np.pi),
-                          anchor_x='center', anchor_y='center')
-    position = collection.translate.copy()
-    speed = np.random.uniform(0.002,0.005,len(collection))
+    mouse = 400,400
+    translate = [300,200]
+    scale = 1.
+
+    font_manager = FontManager()
+    collection = GlyphCollection(font_manager)
+    collection.append("Hello World !\nHow are you today ?",
+                      rotate=0.0, scale=1, size=48,
+                      color=(0,0,0,1),  translate=translate,
+                      anchor_x = 'center', anchor_y = 'center')
     glut.glutMainLoop()
 

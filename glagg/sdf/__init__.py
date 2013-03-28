@@ -28,19 +28,5 @@
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
 # -----------------------------------------------------------------------------
-
-import sdf
-
-from path import Path
-from transforms import *
-from shader import Shader
-from dash_atlas import DashAtlas
-from vertex_buffer import VertexBuffer
+from font_manager import FontManager
 from glyph_collection import GlyphCollection
-from path_collection import PathCollection
-from line_collection import LineCollection
-from grid_collection import GridCollection
-from circle_collection import CircleCollection
-from ellipse_collection import EllipseCollection
-from arc import elliptical_arc, arc
-from curves import curve3_bezier, curve4_bezier

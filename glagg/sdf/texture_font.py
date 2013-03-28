@@ -29,9 +29,17 @@
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
 # -----------------------------------------------------------------------------
-import os
+import sys
 import numpy as np
 from freetype import *
+import OpenGL.GL as gl
+import OpenGL.GLUT as glut
+from scipy.ndimage.interpolation import zoom
+
+from glagg.transforms import *
+from glagg.shader import Shader
+from glagg.sdf.sdf import compute_sdf
+from glagg.vertex_buffer import VertexBuffer
 
 
 # -----------------------------------------------------------------------------
@@ -89,107 +97,73 @@ class TextureGlyph:
 
 # -----------------------------------------------------------------------------
 class TextureFont:
-    '''
-    A Font gathers a set of glyph relatively to a given font filename
-    and size.
-    '''
-
-    def __init__(self, filename, size, atlas):
-        '''
-        Initialize font
-
-        Parameters:
-        -----------
-
-        atlas: Atlas
-            Atlas where glyph will be stored
-
-        filename: str
-            Font filename
-        
-        size : float
-            Font size
-        '''
-
+    def __init__(self, filename, atlas):
         self.atlas = atlas
         self.filename = filename
-        self.size = size
         self.glyphs = {}
         face = Face( self.filename )
-        face.set_char_size( int(self.size*64))
+        face.set_char_size( int(64*64))
         metrics = face.size
         self.ascender  = metrics.ascender/64.0
         self.descender = metrics.descender/64.0
         self.height    = metrics.height/64.0
         self.linegap   = self.height - self.ascender + self.descender
-        self.depth     = self.atlas.depth
-        set_lcd_filter(FT_LCD_FILTER_LIGHT)
-
 
     def __getitem__(self, charcode):
-        '''
-        x.__getitem__(y) <==> x[y]
-        '''
         if charcode not in self.glyphs.keys():
             self.load('%c' % charcode)
         return self.glyphs[charcode]
 
+    def load_glyph(self, face, charcode, h_size=512, l_size=64, padding=0.25):
+        face.set_char_size( h_size*64 )
+        face.load_char(charcode, FT_LOAD_RENDER | FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT);
 
- 
+        bitmap = face.glyph.bitmap
+        width  = face.glyph.bitmap.width
+        height = face.glyph.bitmap.rows
+        pitch  = face.glyph.bitmap.pitch
+
+        # Get glyph into a numpy array
+        G = np.array(bitmap.buffer).reshape(height,pitch)
+        G = G[:,:width].astype(np.ubyte)
+
+        # Pad high resolution glyph with a blank border and normalize values
+        # between 0 and 1
+        h_width  = (1+2*padding)*width
+        h_height = (1+2*padding)*height
+        h_data = np.zeros( (h_height,h_width), np.double)
+        ox,oy = padding*width, padding*height
+        h_data[oy:oy+height, ox:ox+width] = G/255.0
+
+       # Compute distance field at high resolution
+        compute_sdf(h_data)
+
+       # Scale down glyph to low resoltion size
+        ratio = l_size/float(h_size)
+        l_data = 1 - zoom(h_data, ratio, cval=1.0)
+
+       # Compute information at low resolution size
+        size   = ( l_data.shape[1],l_data.shape[0] )
+        offset = ( (face.glyph.bitmap_left - padding*width) * ratio,
+                   (face.glyph.bitmap_top + padding*height) * ratio )
+        advance = ( (face.glyph.advance.x/64.0)*ratio,
+                    (face.glyph.advance.y/64.0)*ratio )
+        return l_data, size, offset, advance
+
+
     def load(self, charcodes = ''):
-        '''
-        Build glyphs corresponding to individual characters in charcodes.
-
-        Parameters:
-        -----------
-        
-        charcodes: [str | unicode]
-            Set of characters to be represented
-        '''
         face = Face( self.filename )
-        pen = Vector(0,0)
-        hres = 64
-        hscale = 1.0/64
-        face.set_char_size( int(self.size * 64), 0, hres*72, 72 )
-        matrix = Matrix( int((hscale) * 0x10000L), int((0.0) * 0x10000L),
-                         int((0.0)    * 0x10000L), int((1.0) * 0x10000L) )
 
         for charcode in charcodes:
-            face.set_transform( matrix, pen )
             if charcode in self.glyphs.keys():
                 continue
             self.atlas._dirty = True
-            flags = FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT
-            if self.depth == 3:
-                flags |= FT_LOAD_TARGET_LCD
-
-            face.load_char( charcode, flags )
-            bitmap = face.glyph.bitmap
-            left   = face.glyph.bitmap_left
-            top    = face.glyph.bitmap_top
-            width  = face.glyph.bitmap.width
-            rows   = face.glyph.bitmap.rows
-            pitch  = face.glyph.bitmap.pitch
-
-
-            x,y,w,h = self.atlas.get_region(width/self.depth+2, rows+2)
-            if x < 0:
-                print 'Missed !'
-                continue
-            x,y = x+1, y+1
-            w,h = w-2, h-2
-            data = []
-            for i in range(rows):
-                data.extend(bitmap.buffer[i*pitch:i*pitch+width])
-            data = np.array(data,dtype=np.ubyte).reshape(h,w,self.depth)
-            Z = data/255.0
-            data = (Z*255).astype(np.ubyte)
-            self.atlas.set_region((x,y,w,h), data)
-
-            # Build glyph
-            size   = w,h
-            offset = left, top
-            advance= face.glyph.advance.x, face.glyph.advance.y
+            data,size,offset,advance = self.load_glyph(face, charcode, 256, 64)
+            w,h = size
+            x,y = self.atlas.allocate(w+2,h+2)
+            self.atlas.add(data, (x+1,y+1,w,h))
+            x += 1
+            y += 1
 
             u0     = (x +     0.0)/float(self.atlas.width)
             v0     = (y +     0.0)/float(self.atlas.height)
@@ -198,18 +172,12 @@ class TextureFont:
             texcoords = (u0,v0,u1,v1)
             glyph = TextureGlyph(charcode, size, offset, advance, texcoords)
             self.glyphs[charcode] = glyph
-
             # Generate kerning
+            face.set_char_size( 64*64 )
             for g in self.glyphs.values():
-                # 64 * 64 because of 26.6 encoding AND the transform matrix used
-                # in texture_font_load_face (hres = 64)
                 kerning = face.get_kerning(g.charcode, charcode, mode=FT_KERNING_UNFITTED)
                 if kerning.x != 0:
-                    glyph.kerning[g.charcode] = kerning.x/(64.0*hres)
+                    glyph.kerning[g.charcode] = kerning.x/64.0
                 kerning = face.get_kerning(charcode, g.charcode, mode=FT_KERNING_UNFITTED)
                 if kerning.x != 0:
-                    g.kerning[charcode] = kerning.x/(64.0*hres)
-            # High resolution advance.x calculation
-            # gindex = face.get_char_index( charcode )
-            # a = face.get_advance(gindex, FT_LOAD_RENDER | FT_LOAD_TARGET_LCD)/(64*72)
-            # glyph.advance = a, glyph.advance[1]
+                    g.kerning[charcode] = kerning.x/64.0

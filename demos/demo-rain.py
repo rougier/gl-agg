@@ -70,7 +70,7 @@ if __name__ == '__main__':
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
     glut.glutInitWindowSize(800, 800)
-    glut.glutCreateWindow("Antialiased thick circles")
+    glut.glutCreateWindow("Circle rain")
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
     glut.glutKeyboardFunc(on_keyboard)

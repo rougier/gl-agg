@@ -31,23 +31,20 @@
 // ------------------------------------
 uniform mat4      u_M, u_V, u_P, u_N;
 uniform sampler2D u_font_atlas;
-uniform vec3      u_font_atlas_shape;
+uniform vec2      u_font_atlas_shape;
 uniform sampler2D u_uniforms;
 uniform vec2      u_uniforms_shape;
+uniform sampler1D u_kernel;
 
 // Attributes
 // ------------------------------------
 attribute vec2  a_position;
 attribute vec2  a_texcoord;
-attribute float a_shift;
-attribute float a_gamma;
 attribute float a_index;
 
 // Varying
 // ------------------------------------
 varying vec2  v_texcoord;
-varying float v_gamma;
-varying float v_shift;
 varying vec4  v_color;
 void main()
 {
@@ -83,16 +80,30 @@ void main()
     // Translation
     position +=  translate;
 
-    // Do we take rotation into accounr for shift ?
-    v_shift = position.x-floor(position.x);
-
     position.x = floor(position.x);
     position.y = floor(position.y);
-
-
     gl_Position = (u_P*(u_V*u_M))*vec4(position,0.0,1.0);
-
     v_texcoord = a_texcoord;
+
 //    v_shift = a_shift;
-    v_gamma = a_gamma;
+//    v_gamma = a_gamma;
 }
+
+/* // Uniforms */
+/* // ------------------------------------ */
+/* uniform mat4      u_M, u_V, u_P, u_N; */
+/* uniform sampler2D u_texture; */
+
+/* // Attributes */
+/* // ------------------------------------ */
+/* attribute vec2  a_position; */
+/* attribute vec2  a_texcoord; */
+
+/* // Varying */
+/* // ------------------------------------ */
+/* varying vec2  v_texcoord; */
+/* void main() */
+/* { */
+/*     gl_Position = (u_P*(u_V*u_M))*vec4(a_position,0.0,1.0); */
+/*     v_texcoord = a_texcoord; */
+/* } */

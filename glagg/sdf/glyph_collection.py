@@ -35,32 +35,26 @@ import OpenGL.GL as gl
 from glagg.shader import Shader
 from glagg.collection import Collection
 from glagg.transforms import orthographic
-from glagg.font_manager import FontManager
+from glagg.sdf.font_manager import FontManager
 
 
 # -----------------------------------------------------------------------------
 class GlyphCollection(Collection):
-    '''
-    '''
+    ''' '''
 
     def __init__(self, font_manager=None):
         
         self.vtype = np.dtype( [('a_position', 'f4', 2),
-                                ('a_texcoord', 'f4', 2),
-                                ('a_shift',    'f4', 1),
-                                ('a_gamma',    'f4', 1)] )
+                                ('a_texcoord', 'f4', 2)] )
         self.utype = np.dtype( [('color',      'f4', 4),
                                 ('translate',  'f4', 2),
                                 ('scale',      'f4', 1),
                                 ('rotate',     'f4', 1)] )
-        if font_manager:
-            self.font_manager = font_manager
-        else:
-            self.font_manager = FontManager(1024,1024,3)
+        self.font_manager = font_manager
         Collection.__init__(self, self.vtype, self.utype)
-        shaders = os.path.join(os.path.dirname(__file__),'shaders')
-        vertex_shader= os.path.join( shaders, 'text.vert')
-        fragment_shader= os.path.join( shaders, 'text.frag')
+        shaders = os.path.join(os.path.dirname(__file__),'../shaders')
+        vertex_shader= os.path.join( shaders, 'sdf_text.vert')
+        fragment_shader= os.path.join( shaders, 'sdf_text.frag')
         self.shader = Shader( open(vertex_shader).read(),
                               open(fragment_shader).read() )
 
@@ -81,7 +75,7 @@ class GlyphCollection(Collection):
             height = max(height, glyph.size[1])
             prev = charcode
         if tight:
-            width = width - glyph.advance[0]/64.0 - kerning + glyph.size[0]
+            width = width - glyph.advance[0] - kerning + glyph.size[0]
             height = height
         else:
            width = width
@@ -99,8 +93,7 @@ class GlyphCollection(Collection):
                 translate=(0,0), scale = 1.0, rotate = 0.0, tight_bbox=True,
                 anchor_x='left', anchor_y='baseline', filename='./Vera.ttf'):
 
-        filename = os.path.join(os.path.dirname(__file__),'fonts')
-        filename = os.path.join(filename, 'Vera.ttf')
+        filename = os.path.join('.', 'Vera.ttf')
         font = self.font_manager.get(filename, size)
         n = len(text)
         V = self.bake(text, font, anchor_x, anchor_y, tight_bbox=True)
@@ -120,14 +113,30 @@ class GlyphCollection(Collection):
         prev = None
         x,y = 0, 0
         width, height = 0,0
+        linewidth, lineheight = 0,0
         descender, ascender = 0,0
         for i,charcode in enumerate(text):
+
+            if charcode == '\n':
+                width = max(linewidth, width)
+                height = max(lineheight, height)
+                x = 0
+                y -= lineheight
+                linewidth, lineheight = 0,0
+                continue
+
             glyph = font[charcode]
             kerning = glyph.get_kerning(prev)
             x0 = x + glyph.offset[0] + kerning
             y0 = y + glyph.offset[1]
             x1 = x0 + glyph.size[0]
             y1 = y0 - glyph.size[1]
+
+            y0 = int(y0)
+            y1 = int(y1)
+            x0 = int(x0)
+            x1 = int(x1)
+
             u0 = glyph.texcoords[0]
             v0 = glyph.texcoords[1]
             u1 = glyph.texcoords[2]
@@ -136,21 +145,21 @@ class GlyphCollection(Collection):
             indices   = [index, index+1, index+2, index, index+2, index+3]
             position  = [[x0,y0],[x0,y1],[x1,y1], [x1,y0]]
             texcoords = [[u0,v0],[u0,v1],[u1,v1], [u1,v0]]
+
             vertices['a_position'][i*4:i*4+4] = position
             vertices['a_texcoord'][i*4:i*4+4] = texcoords
-            vertices['a_gamma'][i*4:i*4+4] = 1.0
-            x += glyph.advance[0]/64.0 + kerning
-            y += glyph.advance[1]/64.0
+            x += glyph.advance[0] + kerning
+            y += glyph.advance[1]
 
             ascender = max(ascender,y0)
             descender = min(ascender,y1)
-            width += glyph.advance[0]/64.0 + kerning
-            height = max(height, glyph.size[1])
+            linewidth += glyph.advance[0] + kerning
+            lineheight = max(height, glyph.size[1])
             prev = charcode
 
         # Tight bounding box
         if tight_bbox:
-            width = width - glyph.advance[0]/64.0 - kerning + glyph.size[0]
+            width = width - glyph.advance[0] - kerning + glyph.size[0]
             height = height
         # Loose bounding box
         else:
@@ -177,20 +186,22 @@ class GlyphCollection(Collection):
 
         return vertices
 
-
     # ---------------------------------
     def draw(self, P=None, V=None, M=None):
-        atlas = self.font_manager.atlas
+        manager = self.font_manager
+        atlas = manager.atlas
+        shader = self.shader
 
         if self._dirty:
             self.upload()
+
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         gl.glEnable(gl.GL_BLEND)
         _,_,width,height = gl.glGetIntegerv( gl.GL_VIEWPORT )
         P = orthographic( 0, width, 0, height, -1, +1 )
         V = np.eye(4).astype( np.float32 )
         M = np.eye(4).astype( np.float32 )
-        shader = self.shader
+
         shader.bind()
 
         gl.glActiveTexture( gl.GL_TEXTURE0 )
@@ -201,9 +212,13 @@ class GlyphCollection(Collection):
 
         gl.glActiveTexture( gl.GL_TEXTURE1 )
         shader.uniformi( 'u_font_atlas', 1 )
+        gl.glBindTexture( gl.GL_TEXTURE_2D, manager.atlas_texture.id)
         shader.uniformf( 'u_font_atlas_shape',
-                         atlas.width, atlas.height, atlas.depth)
-        gl.glBindTexture( gl.GL_TEXTURE_2D, self.font_manager.atlas.texid)
+                         manager.atlas.width, manager.atlas.height)
+        
+        gl.glActiveTexture( gl.GL_TEXTURE2 )
+        shader.uniformi( 'u_filter_lut', 2 )
+        gl.glBindTexture( gl.GL_TEXTURE_1D, manager.filter_texture.id)
 
         shader.uniform_matrixf( 'u_M', M )
         shader.uniform_matrixf( 'u_V', V )
