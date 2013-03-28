@@ -157,7 +157,7 @@ void main()
 {
     vec2 pixel = 1.0 / u_font_atlas_shape;
 
-    vec4 glyph_color = vec4(1.0,1.0,1.0,1.0);
+    vec4 glyph_color = vec4(0.0,0.0,0.0,1.0);
     vec3 outline_color = vec3(0.0,0.0,0.0);
 
     // vec4 color = texture2D(u_font_atlas, v_texcoord.xy);
@@ -168,10 +168,10 @@ void main()
     float alpha = smoothstep(glyph_center-width, glyph_center+width, dist);
 
     // Smooth
-    // gl_FragColor = vec4(glyph_color.rgb, glyph_color.a*alpha);
+    gl_FragColor = vec4(glyph_color.rgb, glyph_color.a*alpha);
 
     // Outline
-    float mu = smoothstep(outline_center-width, outline_center+width, dist);
-    vec3 rgb = mix(outline_color.rgb, glyph_color.rgb, mu);
-    gl_FragColor = vec4(rgb, max(alpha,mu));
+    // float mu = smoothstep(outline_center-width, outline_center+width, dist);
+    // vec3 rgb = mix(outline_color.rgb, glyph_color.rgb, mu);
+    // gl_FragColor = vec4(rgb, max(alpha,mu));
 }

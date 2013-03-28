@@ -89,14 +89,13 @@ class GlyphCollection(Collection):
     # ---------------------------------
     def append( self, text,
                 family='Sans', size=16, bold=False, italic=False,
-                color=(0.0, 0.0, 0.0, 1.0),
+                color=(0.0, 0.0, 0.0, 1.0), lineheight = 1.25,
                 translate=(0,0), scale = 1.0, rotate = 0.0, tight_bbox=True,
                 anchor_x='left', anchor_y='baseline', filename='./Vera.ttf'):
 
-        filename = os.path.join('.', 'Vera.ttf')
         font = self.font_manager.get(filename, size)
         n = len(text)
-        V = self.bake(text, font, anchor_x, anchor_y, tight_bbox=True)
+        V = self.bake(text, font, anchor_x, anchor_y, lineheight, tight_bbox=True)
         I = np.resize( np.array([0,1,2,0,2,3], dtype=np.uint32), n*(2*3))
         I += np.repeat( 4*np.arange(n), 6)
         U = np.zeros(1, self.utype)
@@ -108,39 +107,36 @@ class GlyphCollection(Collection):
 
 
     # ---------------------------------
-    def bake(self, text, font, anchor_x='center', anchor_y='center', tight_bbox=True):
+    def bake(self, text, font, anchor_x='center', anchor_y='center',
+             lineheight=1.25, tight_bbox=True):
         vertices = np.zeros( len(text)*4, dtype = self.vtype )
         prev = None
         x,y = 0, 0
         width, height = 0,0
-        linewidth, lineheight = 0,0
+        curr_width, curr_height = 0,0
         descender, ascender = 0,0
         for i,charcode in enumerate(text):
 
             if charcode == '\n':
-                width = max(linewidth, width)
-                height = max(lineheight, height)
+                width = max(curr_width, width)
+                height = max(curr_height, height)
                 x = 0
-                y -= lineheight
-                linewidth, lineheight = 0,0
+                y -= curr_height*lineheight
+                curr_width, curr_height = 0,0
                 continue
 
             glyph = font[charcode]
             kerning = glyph.get_kerning(prev)
-            x0 = x + glyph.offset[0] + kerning
-            y0 = y + glyph.offset[1]
-            x1 = x0 + glyph.size[0]
-            y1 = y0 - glyph.size[1]
-
-            y0 = int(y0)
-            y1 = int(y1)
-            x0 = int(x0)
-            x1 = int(x1)
+            x0 = (x + glyph.offset[0] + kerning)
+            y0 = (y + glyph.offset[1])
+            x1 = (x0 + glyph.size[0])
+            y1 = (y0 - glyph.size[1])
 
             u0 = glyph.texcoords[0]
             v0 = glyph.texcoords[1]
             u1 = glyph.texcoords[2]
             v1 = glyph.texcoords[3]
+
             index     = i*4
             indices   = [index, index+1, index+2, index, index+2, index+3]
             position  = [[x0,y0],[x0,y1],[x1,y1], [x1,y0]]
@@ -153,8 +149,8 @@ class GlyphCollection(Collection):
 
             ascender = max(ascender,y0)
             descender = min(ascender,y1)
-            linewidth += glyph.advance[0] + kerning
-            lineheight = max(height, glyph.size[1])
+            curr_width += glyph.advance[0] + kerning
+            curr_height = max(height, glyph.size[1])
             prev = charcode
 
         # Tight bounding box

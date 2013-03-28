@@ -160,11 +160,10 @@ class TextureFont:
             self.atlas._dirty = True
             data,size,offset,advance = self.load_glyph(face, charcode, 256, 64)
             w,h = size
-            x,y = self.atlas.allocate(w+2,h+2)
-            self.atlas.add(data, (x+1,y+1,w,h))
-            x += 1
-            y += 1
-
+            x,y = self.atlas.allocate(w+4,h+4)
+            self.atlas.add(data, (x+2,y+2,w,h))
+            x += 2
+            y += 2
             u0     = (x +     0.0)/float(self.atlas.width)
             v0     = (y +     0.0)/float(self.atlas.height)
             u1     = (x + w - 0.0)/float(self.atlas.width)

@@ -171,7 +171,6 @@ class TextureFont:
             rows   = face.glyph.bitmap.rows
             pitch  = face.glyph.bitmap.pitch
 
-
             x,y,w,h = self.atlas.get_region(width/self.depth+2, rows+2)
             if x < 0:
                 print 'Missed !'

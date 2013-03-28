@@ -109,7 +109,7 @@ if __name__ == '__main__':
     t0, frames, t = glut.glutGet(glut.GLUT_ELAPSED_TIME), 0, 0
     glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGB | glut.GLUT_DEPTH)
-    glut.glutInitWindowSize(800, 400)
+    glut.glutInitWindowSize(800,400)
     glut.glutCreateWindow("Signed Distance Fields [scroll and zoom with mouse]")
     glut.glutDisplayFunc(on_display)
     glut.glutReshapeFunc(on_reshape)
@@ -130,14 +130,26 @@ if __name__ == '__main__':
             glut.glutMouseWheelFunc(on_wheel)
 
     mouse = 400,400
-    translate = [300,200]
-    scale = 1.
+    translate = [0,340]
+    scale = 0.5
+
+    text = """
+    This text is rendered very efficiently using a
+    Signed Distance Field font and can be scaled to
+    any size without much loss in rendering quality.
+    \n
+    Use the mouse to drag the text.
+    Use the mouse wheel to zoom the text.
+    \n
+    (c) 2013 Nicolas P. Rougier
+    """
 
     font_manager = FontManager()
     collection = GlyphCollection(font_manager)
-    collection.append("Hello World !\nHow are you today ?",
-                      rotate=0.0, scale=1, size=48,
+    collection.append(text,
+                      rotate=0.0, scale=scale,
                       color=(0,0,0,1),  translate=translate,
-                      anchor_x = 'center', anchor_y = 'center')
+                      anchor_x = 'left', anchor_y = 'top',
+                      filename = "WalterTurncoat.ttf")
     glut.glutMainLoop()
 

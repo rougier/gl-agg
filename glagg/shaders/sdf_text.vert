@@ -67,9 +67,9 @@ void main()
     float scale     = _uniform.z;
     float theta     = _uniform.w;
 
-
     // Scaling
     vec2 position = a_position*scale;
+
 
     // Rotation
     float c = cos(theta);
@@ -80,30 +80,7 @@ void main()
     // Translation
     position +=  translate;
 
-    position.x = floor(position.x);
-    position.y = floor(position.y);
-    gl_Position = (u_P*(u_V*u_M))*vec4(position,0.0,1.0);
     v_texcoord = a_texcoord;
 
-//    v_shift = a_shift;
-//    v_gamma = a_gamma;
+    gl_Position = (u_P*(u_V*u_M))*vec4(position,0.0,1.0);
 }
-
-/* // Uniforms */
-/* // ------------------------------------ */
-/* uniform mat4      u_M, u_V, u_P, u_N; */
-/* uniform sampler2D u_texture; */
-
-/* // Attributes */
-/* // ------------------------------------ */
-/* attribute vec2  a_position; */
-/* attribute vec2  a_texcoord; */
-
-/* // Varying */
-/* // ------------------------------------ */
-/* varying vec2  v_texcoord; */
-/* void main() */
-/* { */
-/*     gl_Position = (u_P*(u_V*u_M))*vec4(a_position,0.0,1.0); */
-/*     v_texcoord = a_texcoord; */
-/* } */
