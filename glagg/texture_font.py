@@ -178,12 +178,9 @@ class TextureFont:
                 continue
             x,y = x+1, y+1
             w,h = w-2, h-2
-            data = []
-            for i in range(rows):
-                data.extend(bitmap.buffer[i*pitch:i*pitch+width])
-            data = np.array(data,dtype=np.ubyte).reshape(h,w,self.depth)
-            Z = data/255.0
-            data = (Z*255).astype(np.ubyte)
+            data = np.array(bitmap.buffer).reshape(rows,pitch)
+            data = (data[:,:width].astype(np.ubyte))
+            data = data.reshape(rows,width/self.depth,self.depth)
             self.atlas.set_region((x,y,w,h), data)
 
             # Build glyph
