@@ -59,7 +59,7 @@ class DynamicBuffer(object):
     """
 
     # ---------------------------------
-    def __init__(self, dtype):
+    def __init__(self, dtype=np.float32):
         self._data_dtype = dtype
         self._data_size = 0
         self._data_capacity = 64

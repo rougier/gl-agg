@@ -32,6 +32,7 @@
 Texture
 '''
 import numpy as np
+import scipy.ndimage as ndi
 import OpenGL.GL as gl
 import OpenGL.GLU as glu
 
@@ -232,6 +233,11 @@ class Texture(object):
                              self._width, 0,
                              self._src_format, self._src_type, self._data)
         else:
+            #data = np.empty_like(self._data)
+            #ndi.gaussian_filter(self._data,(1,1), mode='constant',cval=0,output=data)
+            #gl.glTexImage2D (self._target, 0, self._dst_format,
+            #                 self._width, self._height, 0,
+            #                 self._src_format, self._src_type, data)
             gl.glTexImage2D (self._target, 0, self._dst_format,
                              self._width, self._height, 0,
                              self._src_format, self._src_type, self._data)

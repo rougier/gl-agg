@@ -45,13 +45,16 @@ class GlyphCollection(Collection):
     def __init__(self, font_manager=None):
         
         self.vtype = np.dtype( [('a_position', 'f4', 2),
-                                ('a_texcoord', 'f4', 2)] )
+                                ('a_texcoord', 'f4', 2),
+                                ('a_glyphtex', 'f4', 4)] )
         self.utype = np.dtype( [('color',      'f4', 4),
                                 ('translate',  'f4', 2),
                                 ('scale',      'f4', 1),
                                 ('rotate',     'f4', 1)] )
         self.font_manager = font_manager
         Collection.__init__(self, self.vtype, self.utype)
+
+        # code = self.font_manager.filter_code
         shaders = os.path.join(os.path.dirname(__file__),'../shaders')
         vertex_shader= os.path.join( shaders, 'sdf_text.vert')
         fragment_shader= os.path.join( shaders, 'sdf_text.frag')
@@ -144,6 +147,7 @@ class GlyphCollection(Collection):
 
             vertices['a_position'][i*4:i*4+4] = position
             vertices['a_texcoord'][i*4:i*4+4] = texcoords
+            vertices['a_glyphtex'][i*4:i*4+4] = u0,v0,u1,v1
             x += glyph.advance[0] + kerning
             y += glyph.advance[1]
 

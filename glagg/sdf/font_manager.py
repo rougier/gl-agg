@@ -30,6 +30,8 @@
 # -----------------------------------------------------------------------------
 import os
 import numpy as np
+
+import glagg.spatial_filter
 from glagg.texture import Texture
 from glagg.atlas_buffer import AtlasBuffer
 from glagg.sdf.texture_font import TextureFont
@@ -77,9 +79,9 @@ class FontManager(object):
 
         self.filter_kernel = _build_kernel()
         self.filter_texture = Texture(self.filter_kernel,"RGBA","float")
-        # self.filter = spatial_filter.Bicubic()
-        # self.filter_code = self.filter.get_code()
-        # self.filter_texture = Texture(self.filter.LUT,"A","float")
+        #self.filter = glagg.spatial_filter.CatRom()
+        #self.filter_code = self.filter.get_code()
+        #self.filter_texture = Texture(self.filter.LUT,"A","float")
         self.fonts = {}
 
     def get(self, filename, size=12):

@@ -40,6 +40,7 @@ uniform sampler1D u_kernel;
 // ------------------------------------
 attribute vec2  a_position;
 attribute vec2  a_texcoord;
+attribute vec4  a_glyphtex;
 attribute float a_index;
 
 // Varying
@@ -80,7 +81,23 @@ void main()
     // Translation
     position +=  translate;
 
+    // 
     v_texcoord = a_texcoord;
+    /*
+    vec2 pixel = 1.0/u_font_atlas_shape;
+    if( a_texcoord.x == a_glyphtex.x)
+    {
+        float dx = position.x - floor(position.x);
+        position.x = floor(position.x);
+        v_texcoord.x -= dx * pixel.x/scale;
+    }
+    else
+    {
+        float dx = ceil(position.x) - position.x;
+        position.x = ceil(position.x);
+        v_texcoord.x += dx * pixel.x/scale;
+    }
+    */
 
     gl_Position = (u_P*(u_V*u_M))*vec4(position,0.0,1.0);
 }

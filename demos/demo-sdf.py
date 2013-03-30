@@ -37,7 +37,7 @@ import OpenGL.GLUT as glut
 def on_display():
     gl.glClearColor(1,1,1,1);
     gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-    collection.draw()
+    glyphs.draw()
     glut.glutSwapBuffers()
 
 # -------------------------------------
@@ -68,7 +68,7 @@ def on_motion( x, y ):
     dx,dy = x-mouse[0], y-mouse[1]
     translate = [translate[0]+dx,translate[1]+dy]
     mouse = x,y
-    collection.translate = translate
+    glyphs.translate = translate
     glut.glutPostRedisplay()
 
 # -------------------------------------
@@ -87,8 +87,8 @@ def on_scroll(dx, dy):
     translate[1] = y-s*(y-translate[1])/scale
     translate = [translate[0], translate[1]]
     scale = s
-    collection.scale = s
-    collection.translate = translate
+    glyphs.scale = s
+    glyphs.translate = translate
     glut.glutPostRedisplay()
 
 # -------------------------------------
@@ -145,11 +145,11 @@ if __name__ == '__main__':
     """
 
     font_manager = FontManager()
-    collection = GlyphCollection(font_manager)
-    collection.append(text,
-                      rotate=0.0, scale=scale,
-                      color=(0,0,0,1),  translate=translate,
-                      anchor_x = 'left', anchor_y = 'top',
-                      filename = "WalterTurncoat.ttf")
+    glyphs = GlyphCollection(font_manager)
+    glyphs.append(text,
+                  rotate=0.0, scale=scale,
+                  color=(0,0,0,1),  translate=translate,
+                  anchor_x = 'left', anchor_y = 'top',
+                  filename = "WalterTurncoat.ttf")
     glut.glutMainLoop()
 

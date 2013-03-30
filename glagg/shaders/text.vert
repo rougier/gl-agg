@@ -83,7 +83,7 @@ void main()
     // Translation
     position +=  translate;
 
-    // Do we take rotation into accounr for shift ?
+    // Do we take rotation into account for shift ?
     v_shift = position.x-floor(position.x);
 
     position.x = floor(position.x);

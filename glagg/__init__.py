@@ -30,6 +30,7 @@
 # -----------------------------------------------------------------------------
 
 import sdf
+import spatial_filter
 
 from path import Path
 from transforms import *
@@ -44,3 +45,4 @@ from circle_collection import CircleCollection
 from ellipse_collection import EllipseCollection
 from arc import elliptical_arc, arc
 from curves import curve3_bezier, curve4_bezier
+
