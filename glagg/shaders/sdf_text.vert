@@ -81,23 +81,45 @@ void main()
     // Translation
     position +=  translate;
 
-    // 
+    // Adjust glyph position
+    // ---------------------
     v_texcoord = a_texcoord;
     /*
     vec2 pixel = 1.0/u_font_atlas_shape;
     if( a_texcoord.x == a_glyphtex.x)
     {
-        float dx = position.x - floor(position.x);
-        position.x = floor(position.x);
+        float x = floor(position.x) + 0.5;
+        if( position.x <= x ) x -= 1.0;
+        float dx = position.x - x;
+        position.x = x;
         v_texcoord.x -= dx * pixel.x/scale;
     }
     else
     {
-        float dx = ceil(position.x) - position.x;
-        position.x = ceil(position.x);
+        float x = ceil(position.x) - 0.5;
+        if( position.x >= x ) x += 1.0;
+        float dx = x - position.x;
+        position.x = x;
         v_texcoord.x += dx * pixel.x/scale;
     }
-    */
 
+
+    if( a_texcoord.y == a_glyphtex.y)
+    {
+        float y = floor(position.y) + 0.5;
+        if( position.y <= y ) y -= 1.0;
+        float dy = position.y - y;
+        position.y = y;
+        v_texcoord.y += dy * pixel.y/scale;
+    }
+    else
+    {
+        float y = ceil(position.y) - 0.5;
+        if( position.y >= y ) y += 1.0;
+        float dy = y - position.y;
+        position.y = y;
+        v_texcoord.y -= dy * pixel.y/scale;
+    }
+    */
     gl_Position = (u_P*(u_V*u_M))*vec4(position,0.0,1.0);
 }

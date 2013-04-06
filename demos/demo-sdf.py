@@ -149,7 +149,7 @@ if __name__ == '__main__':
     glyphs.append(text,
                   rotate=0.0, scale=scale,
                   color=(0,0,0,1),  translate=translate,
-                  anchor_x = 'left', anchor_y = 'top',
-                  filename = "WalterTurncoat.ttf")
+                  anchor_x = 'left', anchor_y = 'top')
+#                  filename = "WalterTurncoat.ttf")
     glut.glutMainLoop()
 

@@ -28,5 +28,5 @@
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of Nicolas P. Rougier.
 # -----------------------------------------------------------------------------
-from font_manager import FontManager
-from glyph_collection import GlyphCollection
+from glagg.sdf.font_manager import FontManager
+from glagg.sdf.glyph_collection import GlyphCollection

@@ -194,7 +194,11 @@ class DynamicBuffer(object):
     def append(self, data ):
         """ L.append(object) -- append object to end """
 
-        data = np.array(data).view(self._data_dtype).ravel()
+        if type(data) is np.array:
+            data = np.array(data).view(self._data_dtype).ravel()
+        else:
+            data = np.array(data,dtype=self._data_dtype).ravel()
+
         size = data.size
 
         # Check if data array is big enough and resize it if necessary

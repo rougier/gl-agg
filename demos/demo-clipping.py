@@ -54,11 +54,9 @@ def on_display():
 # -------------------------------------
 def on_reshape(width, height):
     size = min(width, height)
-
     collection.translate = positions * size
     mask.translate = [size/2, size/2]
     mask.scale = [size * 0.4]
-
     gl.glViewport(0, 0, width, height)
 
 # -------------------------------------
@@ -75,7 +73,8 @@ def on_idle():
     t = glut.glutGet( glut.GLUT_ELAPSED_TIME )
     frames = frames + 1
     if t-t0 > 2500:
-        print "FPS : %.2f (%d frames in %.2f second)" % (frames*1000.0/(t-t0), frames, (t-t0)/1000.0)
+        print( "FPS : %.2f (%d frames in %.2f second)"
+               % (frames*1000.0/(t-t0), frames, (t-t0)/1000.0))
         t0, frames = t,0
     glut.glutPostRedisplay()
 
