@@ -135,6 +135,9 @@ class GlyphCollection(Collection):
             x1 = (x0 + glyph.size[0])
             y1 = (y0 - glyph.size[1])
 
+            y0 = int(y0)
+            y1 = int(y1)
+
             u0 = glyph.texcoords[0]
             v0 = glyph.texcoords[1]
             u1 = glyph.texcoords[2]
