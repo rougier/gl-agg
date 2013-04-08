@@ -163,23 +163,10 @@ void main()
     vec3 outline_color = vec3(0.0,0.0,0.0);
 
     // float d = texture2D(u_font_atlas, v_texcoord.xy).a;
-
-    float curr = interpolate(u_font_atlas, u_filter_lut, v_texcoord.xy, pixel).a;
-    float prev = interpolate(u_font_atlas, u_filter_lut,
-                             v_texcoord.xy - 1.0*pixel, pixel).a;
-    float next = interpolate(u_font_atlas, u_filter_lut,
-                             v_texcoord.xy + 1.0*pixel, pixel).a; 
-    float width = fwidth(curr);
-    float alpha = smoothstep(glyph_center-width, glyph_center+width, curr);
-/*
-    if( (alpha < .5) && (prev < curr) && (curr < next) )
-    {
-        glyph_color = vec4(0.0,0.0,1.0,1.0);
-    }
-    else if(  (alpha < .5) && (prev > curr) && (curr > next) ) {
-        glyph_color = vec4(1.0,0.0,0.0,1.0);
-    }
-*/
+    float d = interpolate(u_font_atlas, u_filter_lut, v_texcoord.xy, pixel).a;
+    float width = fwidth(d);
+    //float alpha = smoothstep(glyph_center-width, glyph_center+width, d);
+    float alpha = smoothstep(glyph_center-width, glyph_center+width, d);
 
     // Smooth
     gl_FragColor = vec4(glyph_color.rgb, glyph_color.a*alpha);

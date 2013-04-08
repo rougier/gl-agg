@@ -141,6 +141,9 @@ class TextureFont:
        # Scale down glyph to low resoltion size
         ratio = l_size/float(h_size)
         l_data = 1 - zoom(h_data, ratio, cval=1.0)
+        if len(l_data):
+            l_data  /= l_data.max()
+
 
        # Compute information at low resolution size
         size   = ( l_data.shape[1],l_data.shape[0] )
