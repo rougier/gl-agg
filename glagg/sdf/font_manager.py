@@ -31,7 +31,7 @@
 import os
 import numpy as np
 
-import glagg.spatial_filter
+# import glagg.spatial_filter
 from glagg.texture import Texture
 from glagg.atlas_buffer import AtlasBuffer
 from glagg.sdf.texture_font import TextureFont
