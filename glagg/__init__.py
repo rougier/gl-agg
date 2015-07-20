@@ -30,7 +30,7 @@
 # -----------------------------------------------------------------------------
 
 import sdf
-import spatial_filter
+#import spatial_filter
 
 from path import Path
 from transforms import *

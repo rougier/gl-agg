@@ -53,17 +53,13 @@ class Texture(object):
                 '<f4' : gl.GL_FLOAT }
 
     gl_storage =  { 'A'    : {'default' : gl.GL_ALPHA,
-                              'ushort'  : gl.GL_ALPHA16,
-                              'float'   : gl.GL_ALPHA32F_ARB },
+                              'ushort'  : gl.GL_ALPHA16 },
                     'LA'   : {'default' : gl.GL_LUMINANCE_ALPHA,
-                              'ushort'  : gl.GL_LUMINANCE16_ALPHA16,
-                              'float'   : gl.GL_LUMINANCE_ALPHA32F_ARB },
+                              'ushort'  : gl.GL_LUMINANCE16_ALPHA16 },
                     'RGB'  : {'default' : gl.GL_RGB,
-                              'ushort'  : gl.GL_RGB16,
-                              'float'   : gl.GL_RGB32F },
+                              'ushort'  : gl.GL_RGB16 },
                     'RGBA' : {'default' : gl.GL_RGBA,
-                              'ushort'  : gl.GL_RGBA16,
-                              'float'   : gl.GL_RGBA32F } }
+                              'ushort'  : gl.GL_RGBA16 } }
 
     def __init__(self, data, format=None, storage='default'):
         '''
