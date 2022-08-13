@@ -148,7 +148,7 @@ class Path(object):
         vertices = self.vertices[-1]
 
         x0, y0 = self.current
-        for i in len(0,range(points),4):
+        for i in range(0,range(points),4):
             x1,y1 = points[i+0], points[i+1]
             self.last_control3 = x1,y1
             x2,y2 = points[i+2], points[i+3]
